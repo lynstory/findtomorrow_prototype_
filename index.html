@@ -401,9 +401,59 @@
   .di-code{font-size:10px;font-family:ui-monospace,"SF Mono",monospace;color:#666;flex:0 0 62px;letter-spacing:.02em;}
   .dash-item.on .di-code{color:#aaa;}
   .di-name{flex:1;line-height:1.35;}
+
+  /* ===== 모바일 토글 버튼 (PC에선 숨김) ===== */
+  .dash-toggle{ display:none; }
+
+  /* ===== 모바일 반응형 (≤640px) ===== */
+  @media (max-width:640px){
+    body{ padding:12px; gap:12px; overflow-x:hidden; flex-direction:column; align-items:center; }
+
+    /* 폰 목업: 뷰포트 폭에 비례해 축소 (비율 유지, 최대 1배) */
+    .phone{
+      --phone-scale: min(1, calc((100vw - 24px) / 360));
+      transform: scale(var(--phone-scale));
+      transform-origin: top center;
+      /* 축소된 만큼 아래 빈 공간 제거 */
+      margin-bottom: calc((var(--phone-scale) - 1) * 800px);
+    }
+
+    /* 데모 컨트롤 바: 폰 폭에 맞게 */
+    .demo-ctrl{ width:calc(100vw - 24px); flex:0 0 auto; flex-wrap:wrap; }
+
+    /* 토글 버튼: 좌상단 고정 */
+    .dash-toggle{
+      display:block;
+      position:fixed; top:10px; left:10px; z-index:200;
+      background:#2a2a2a; color:#fff;
+      padding:8px 12px; border-radius:8px;
+      font-size:13px; font-weight:600;
+      box-shadow:0 2px 10px rgba(0,0,0,.4);
+      border:none; cursor:pointer;
+    }
+
+    /* 데모 패널: 기본 숨김 → 좌측 드로어로 변환 */
+    .dash{
+      position:fixed; top:0; left:0; bottom:0;
+      width:82%; max-width:300px;
+      max-height:100vh; border-radius:0 16px 16px 0;
+      z-index:190;
+      transform:translateX(-105%);
+      transition:transform .25s;
+    }
+    .dash.open{ transform:translateX(0); }
+
+    /* 패널 열릴 때 뒤 배경 딤 처리 오버레이 */
+    .dash-overlay{
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:180;
+    }
+    .dash-overlay.show{ display:block; }
+  }
 </style>
 </head>
 <body>
+<div class="dash-overlay" id="dashOverlay" onclick="closeDash()"></div>
+<button id="dashToggle" class="dash-toggle" onclick="toggleDash()">☰ 화면목록</button>
 <aside class="dash" id="dash">
   <div class="dash-head">
     <div class="dash-badge">PROTOTYPE</div>
@@ -627,6 +677,18 @@
   function navTo(id){
     document.querySelectorAll('.modal-wrap.show').forEach(m=>m.classList.remove('show'));
     go(id);
+    // 모바일에서 화면 선택 후 패널 자동 닫기
+    if(window.matchMedia('(max-width:640px)').matches) closeDash();
+  }
+  function toggleDash(){
+    const dash=document.getElementById('dash');
+    const overlay=document.getElementById('dashOverlay');
+    dash.classList.toggle('open');
+    overlay.classList.toggle('show', dash.classList.contains('open'));
+  }
+  function closeDash(){
+    document.getElementById('dash').classList.remove('open');
+    document.getElementById('dashOverlay').classList.remove('show');
   }
   function syncDash(id){
     document.querySelectorAll('.dash-item').forEach(b=>b.classList.toggle('on', b.dataset.screen===id));
