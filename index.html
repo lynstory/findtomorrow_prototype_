@@ -407,15 +407,20 @@
 
   /* ===== 모바일 반응형 (≤640px) ===== */
   @media (max-width:640px){
-    body{ padding:12px; gap:12px; overflow-x:hidden; flex-direction:column; align-items:center; }
+    body{ padding:56px 12px 12px; gap:12px; overflow-x:hidden; flex-direction:column; align-items:center; }
 
-    /* 폰 목업: 뷰포트 폭에 비례해 축소 (비율 유지, 최대 1배) */
+    /* 폰 목업: 가로·세로 둘 다 기준으로 축소, 프레임 전체가 한 화면에 들어오게 */
+    /* 100svh = 주소창 보이는 실제 최소 높이 (100vh는 모바일에서 주소창 숨긴 최대라 부정확) */
     .phone{
-      --phone-scale: min(1, calc((100vw - 24px) / 360));
+      --phone-scale: min(
+        calc((100vw - 16px) / 380),
+        calc((100svh - 64px) / 820),
+        1
+      );
       transform: scale(var(--phone-scale));
       transform-origin: top center;
       /* 축소된 만큼 아래 빈 공간 제거 */
-      margin-bottom: calc((var(--phone-scale) - 1) * 800px);
+      margin-bottom: calc((var(--phone-scale) - 1) * 820px);
     }
 
     /* 데모 컨트롤 바: 폰 폭에 맞게 */
