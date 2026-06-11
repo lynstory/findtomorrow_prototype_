@@ -542,16 +542,17 @@
 <button id="dashToggle" class="dash-toggle" onclick="toggleDash()">☰ 화면목록</button>
 <button id="demoToggle" class="demo-toggle" onclick="toggleDemo()">⚙ 데모상태</button>
 <button id="fitToggle" class="fit-toggle" onclick="toggleFit()">⛶ 전체보기</button>
-<button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow</button>
+<button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow &amp; Site Map</button>
 
 <!-- IA & Flow 뷰어 오버레이 -->
 <div class="iaflow-modal" id="iaflowModal">
   <div class="iaflow-head">
-    <span class="iaflow-title">IA &amp; Flow</span>
+    <span class="iaflow-title">IA &amp; Flow &amp; Site Map</span>
     <div class="sep-v"></div>
     <div class="iaflow-tabs">
       <button id="t-ia" class="on" onclick="iaTab('ia')">IA</button>
       <button id="t-flow" onclick="iaTab('flow')">User Flow</button>
+      <button id="t-sitemap" onclick="iaTab('sitemap')">Site Map</button>
     </div>
     <div class="sep-v" id="flowLevelSep" style="display:none"></div>
     <div class="iaflow-flowlevel" id="flowLevelGroup" style="display:none">
@@ -1548,6 +1549,39 @@
   MYINFO --> MNC["공지사항"]
   MYINFO --> MON["의견 보내기"]`;
 
+  var SITEMAP_SRC = `graph TD
+  ROOT["내일찾기 홈"]:::root
+  ROOT --> SEARCH["검색"]:::all
+  ROOT --> REC["맞춤 추천"]:::member
+  ROOT --> SCRAP["스크랩"]:::member
+  ROOT --> MY["내 정보"]:::all
+  ROOT --> ACC["계정"]:::guest
+  SEARCH --> JOB["일자리"]:::allLight & EDU["교육"]:::allLight & POL["정책"]:::allLight
+  REC --> RECGET["추천 받기"]:::memberLight & RECRES["추천 결과"]:::memberLight
+  SCRAP --> SAVED["저장 목록"]:::memberLight
+  MY --> ME["개인정보 수정"]:::memberLight
+  MY --> MS["내가 저장한 목록"]:::memberLight
+  MY --> MRC["추천 기록"]:::memberLight
+  MY --> MNH["알림 내역"]:::memberLight
+  MY --> MNS["알림 설정"]:::allLight
+  MY --> MFQ["FAQ"]:::allLight
+  MY --> MNC["공지사항"]:::allLight
+  MY --> MON2["의견 보내기"]:::allLight
+  ACC --> LOGIN2["로그인"]:::guestLight & SIGNUP2["회원가입"]:::guestLight
+  subgraph LEGEND["접근 권한"]
+    direction TB
+    LG1["전체 접근"]:::all
+    LG2["회원 전용"]:::member
+    LG3["비회원"]:::guest
+  end
+  classDef root fill:#6b7280,stroke:#6b7280,color:#fff;
+  classDef all fill:#5b8def,stroke:#5b8def,color:#fff;
+  classDef member fill:#6cb24f,stroke:#6cb24f,color:#fff;
+  classDef guest fill:#e8a33d,stroke:#e8a33d,color:#fff;
+  classDef allLight fill:#ffffff,stroke:#b9cdf0,color:#333;
+  classDef memberLight fill:#d8edd0,stroke:#a9d49a,color:#333;
+  classDef guestLight fill:#f5e6ca,stroke:#e3c693,color:#333;`;
+
   var FLOW_CORE_SRC = `flowchart TD
   S["스플래시 ONB-010"] -->|"자동/탭"| ONB["온보딩 ONB-020"]
   ONB -->|"시작하기"| HG["홈 비회원 HOM-010"]
@@ -1647,10 +1681,12 @@
 
   function _iaCurrentSrc(){
     if(_iaCurrentTab === 'ia') return IA_SRC;
+    if(_iaCurrentTab === 'sitemap') return SITEMAP_SRC;
     return _iaFlowDetail === 'core' ? FLOW_CORE_SRC : FLOW_DETAIL_SRC;
   }
   function _iaCacheKey(){
     if(_iaCurrentTab === 'ia') return 'ia';
+    if(_iaCurrentTab === 'sitemap') return 'sitemap';
     return 'flow_' + _iaFlowDetail;
   }
 
@@ -1685,6 +1721,7 @@
   function _iaSyncUI(){
     document.getElementById('t-ia').classList.toggle('on', _iaCurrentTab === 'ia');
     document.getElementById('t-flow').classList.toggle('on', _iaCurrentTab === 'flow');
+    document.getElementById('t-sitemap').classList.toggle('on', _iaCurrentTab === 'sitemap');
     // 흐름 상세 그룹: User Flow 탭일 때만 표시
     var isFlow = _iaCurrentTab === 'flow';
     var levelGroup = document.getElementById('flowLevelGroup');
