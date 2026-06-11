@@ -404,10 +404,24 @@
 
   /* ===== 모바일 토글 버튼 (PC에선 숨김) ===== */
   .dash-toggle{ display:none; }
+  .fit-toggle{ display:none; }
 
   /* ===== 모바일 반응형 (≤640px) ===== */
   @media (max-width:640px){
-    body{ padding:12px; gap:12px; overflow-x:hidden; flex-direction:column; align-items:center; }
+    body{ padding:56px 12px 12px; gap:12px; overflow-x:hidden; flex-direction:column; align-items:center; }
+
+    /* 전체보기 토글 버튼 (우상단 고정) */
+    .fit-toggle{
+      display:block;
+      position:fixed; top:10px; right:10px; z-index:200;
+      background:#e06a00; color:#fff;
+      padding:8px 12px; border-radius:8px;
+      font-size:13px; font-weight:600;
+      box-shadow:0 2px 10px rgba(0,0,0,.4);
+      border:none; cursor:pointer;
+    }
+    /* 전체보기 모드: 데모 바 숨김 (화면목록 버튼은 유지) */
+    body.fit-mode .demo-ctrl{ display:none !important; }
 
     /* 폰 목업: 뷰포트 폭에 비례해 축소 (비율 유지, 최대 1배) */
     .phone{
@@ -454,6 +468,7 @@
 <body>
 <div class="dash-overlay" id="dashOverlay" onclick="closeDash()"></div>
 <button id="dashToggle" class="dash-toggle" onclick="toggleDash()">☰ 화면목록</button>
+<button id="fitToggle" class="fit-toggle" onclick="toggleFit()">⛶ 전체보기</button>
 <aside class="dash" id="dash">
   <div class="dash-head">
     <div class="dash-badge">PROTOTYPE</div>
@@ -1363,6 +1378,33 @@
     }
     closeModal(document.getElementById('m_del_my'));
   }
+
+  /* ===== 전체보기 토글 (모바일 전용) ===== */
+  /* window.innerHeight = 주소창 포함 실제 보이는 높이 → CSS svh/vh보다 정확 */
+  function scalePhone(){
+    var phone = document.querySelector('.phone');
+    if(!phone) return;
+    if(window.innerWidth <= 640 && document.body.classList.contains('fit-mode')){
+      var scale = Math.min(
+        (window.innerWidth  - 24) / 380,   // 가로 맞춤 (테두리 포함 380px)
+        (window.innerHeight - 64) / 820,   // 세로 맞춤 (테두리 포함 820px, 버튼 자리 64 확보)
+        1
+      );
+      phone.style.transform = 'scale(' + scale + ')';
+      phone.style.marginBottom = ((scale - 1) * 820) + 'px';
+    } else {
+      phone.style.transform = '';   // 정상 모드 → CSS 가로 폭 축소 규칙으로 복귀
+      phone.style.marginBottom = '';
+    }
+  }
+  function toggleFit(){
+    var on = document.body.classList.toggle('fit-mode');
+    var btn = document.getElementById('fitToggle');
+    if(btn) btn.textContent = on ? '✕ 닫기' : '⛶ 전체보기';
+    scalePhone();
+  }
+  window.addEventListener('resize', scalePhone);
+  window.addEventListener('orientationchange', scalePhone);
 </script>
 </body>
 </html>
