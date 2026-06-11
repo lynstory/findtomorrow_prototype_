@@ -478,6 +478,57 @@
     }
     .dash-overlay.show{ display:block; }
   }
+
+  /* ===== IA & Flow 뷰어 ===== */
+  .iaflow-toggle{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    z-index:200; background:var(--accent); color:#fff;
+    padding:10px 22px; border-radius:999px; font-size:13px; font-weight:700;
+    box-shadow:0 4px 16px rgba(0,0,0,.3); border:none; cursor:pointer;
+    white-space:nowrap;
+  }
+  @media(max-width:640px){ body.fit-mode .iaflow-toggle{ display:none; } }
+
+  .iaflow-modal{
+    position:fixed; inset:0; z-index:300;
+    background:#fff; display:none; flex-direction:column;
+  }
+  .iaflow-modal.open{ display:flex; }
+  .iaflow-head{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    padding:10px 16px; border-bottom:1px solid #e5e5e5;
+    flex:0 0 auto; background:#fff;
+  }
+  .iaflow-title{ font-size:15px; font-weight:700; color:#333; white-space:nowrap; }
+  .sep-v{ width:1px; height:20px; background:#ddd; flex:0 0 auto; }
+  .iaflow-tabs{ display:flex; gap:6px; }
+  .iaflow-views{ display:flex; gap:6px; align-items:center; }
+  .iaflow-tabs button,.iaflow-views button{
+    padding:5px 14px; border-radius:6px; border:1px solid #ccc;
+    font-size:13px; font-weight:600; background:#f5f5f5; color:#555; cursor:pointer;
+  }
+  .iaflow-tabs button.on,.iaflow-views button.on{
+    background:var(--primary); color:#fff; border-color:var(--primary);
+  }
+  .iaflow-copy{
+    padding:5px 12px; border-radius:6px; border:1px solid #ccc;
+    font-size:12px; font-weight:600; background:#fff; color:#555; cursor:pointer;
+  }
+  .iaflow-close{
+    margin-left:auto; padding:4px 10px; border-radius:6px;
+    font-size:20px; font-weight:300; background:none; border:none;
+    color:#777; cursor:pointer; line-height:1;
+  }
+  .iaflow-close:hover{ background:#f5f5f5; }
+  .iaflow-body{ flex:1; overflow:hidden; display:flex; flex-direction:column; }
+  .mm-view{ flex:1; overflow:auto; padding:24px; display:flex; justify-content:flex-start; align-items:flex-start; }
+  .mm-view svg{ max-width:none; height:auto; }
+  .mm-code{
+    flex:1; overflow:auto; padding:20px; margin:0;
+    font-family:ui-monospace,"SF Mono",monospace; font-size:13px;
+    white-space:pre; background:#f6f8fa; color:#333;
+    border:none; outline:none; line-height:1.6;
+  }
 </style>
 </head>
 <body>
@@ -485,6 +536,31 @@
 <button id="dashToggle" class="dash-toggle" onclick="toggleDash()">☰ 화면목록</button>
 <button id="demoToggle" class="demo-toggle" onclick="toggleDemo()">⚙ 데모상태</button>
 <button id="fitToggle" class="fit-toggle" onclick="toggleFit()">⛶ 전체보기</button>
+<button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow</button>
+
+<!-- IA & Flow 뷰어 오버레이 -->
+<div class="iaflow-modal" id="iaflowModal">
+  <div class="iaflow-head">
+    <span class="iaflow-title">IA &amp; Flow</span>
+    <div class="sep-v"></div>
+    <div class="iaflow-tabs">
+      <button id="t-ia" class="on" onclick="iaTab('ia')">IA</button>
+      <button id="t-flow" onclick="iaTab('flow')">User Flow</button>
+    </div>
+    <div class="sep-v"></div>
+    <div class="iaflow-views">
+      <button id="v-diagram" class="on" onclick="iaView('diagram')">시각화</button>
+      <button id="v-code" onclick="iaView('code')">코드</button>
+      <button class="iaflow-copy" id="iaCopyBtn" onclick="iaCopy()" style="display:none">복사</button>
+    </div>
+    <button class="iaflow-close" onclick="closeIaFlow()">✕</button>
+  </div>
+  <div class="iaflow-body">
+    <div id="iaDiagram" class="mm-view"></div>
+    <pre id="iaCode" class="mm-code" style="display:none"><code id="iaCodeText"></code></pre>
+  </div>
+</div>
+
 <aside class="dash" id="dash">
   <div class="dash-head">
     <div class="dash-badge">PROTOTYPE</div>
@@ -1434,6 +1510,159 @@
     var btn = document.getElementById('demoToggle');
     if(btn) btn.textContent = on ? '✕ 닫기' : '⚙ 데모상태';
   }
+
+  /* ===== IA & Flow 뷰어 ===== */
+  var IA_SRC = `graph LR
+  ROOT["내일찾기"]
+  ROOT --> SEARCH["검색"]
+  SEARCH --> JOB["일자리"]
+  JOB --> JOBD["상세 정보"]
+  SEARCH --> EDU["교육"]
+  EDU --> EDUD["상세 정보 "]
+  SEARCH --> POL["정책"]
+  POL --> POLD["상세 정보  "]
+  ROOT --> MREC["맞춤 추천"]
+  MREC --> RECGET["추천 받기"]
+  MREC --> RECRES["추천 결과"]
+  RECRES --> RECD["상세 정보   "]
+  ROOT --> SCRAP["스크랩"]
+  SCRAP --> SAVED["저장한 정보"]
+  ROOT --> MYINFO["내 정보"]
+  MYINFO --> ME["개인정보 수정"]
+  MYINFO --> MS["내가 저장한 목록"]
+  MYINFO --> MRC["추천 기록"]
+  MYINFO --> MNH["알림 내역"]
+  MYINFO --> MNS["알림 설정"]
+  MYINFO --> MFQ["FAQ"]
+  MYINFO --> MNC["공지사항"]
+  MYINFO --> MON["의견 보내기"]`;
+
+  var FLOW_SRC = `flowchart TD
+  S["스플래시 ONB-010"] -->|"자동/탭"| ONB["온보딩 ONB-020"]
+  ONB -->|"시작하기"| HG["홈 비회원 HOM-010"]
+  HG -->|"로그인/회원가입"| LOGIN["로그인 AUTH-010"]
+  LOGIN -->|"이메일"| EMAIL["이메일 로그인 AUTH-020"]
+  LOGIN -->|"회원가입"| SIGNUP["회원가입 AUTH-050"]
+  LOGIN -->|"SNS 최초"| TERMS["약관 동의 AUTH-060"]
+  LOGIN -->|"SNS 기존회원"| HM["홈 회원 HOM-010"]
+  EMAIL -->|"비밀번호 찾기"| FINDPW["비밀번호 찾기 AUTH-030"]
+  EMAIL -->|"로그인"| HM
+  EMAIL -->|"회원가입"| SIGNUP
+  FINDPW --> PWDONE["재설정 완료 AUTH-040"]
+  PWDONE -->|"로그인"| LOGIN
+  SIGNUP --> TERMS
+  TERMS --> DONE["가입 완료 AUTH-090"]
+  DONE --> HM
+  HM --> JOBS["일자리 목록 JOB-010"]
+  HM --> EDUS["교육 목록 EDU-010"]
+  HM --> POLS["정책 목록 POL-010"]
+  HM -->|"맞춤추천"| REC["추천 안내 REC-012"]
+  HM -->|"내정보"| MY["내정보 MYP-010"]
+  JOBS --> JOBD["일자리 상세 JOB-020"]
+  EDUS --> EDUD["교육 상세 EDU-020"]
+  POLS --> POLD["정책 상세 POL-020"]
+  JOBD -.->|"전화 문의"| DIAL["전화 문의"]
+  EDUD -.->|"전화 문의"| DIAL
+  POLD -.->|"전화 문의"| DIAL
+  REC -->|"채팅 시작"| CHAT["채팅 REC-010"]
+  CHAT --> LOADING["로딩 REC-020"]
+  LOADING --> RESULT["추천 결과 REC-030"]
+  RESULT --> SAVELIST["저장 리스트 REC-011"]
+  MY --> MYEDIT["정보 수정 MYP-020"]
+  MY --> MYNOTI["알림 설정 MYP-030"]
+  MY --> MYSCRAP["스크랩 MYP-040"]
+  MY --> MYRECL["추천리스트 목록 MYP-070"]
+  MY --> MYNOTICE["공지사항 MYP-050"]
+  MY --> MYFAQ["FAQ MYP-060"]
+  MY --> MYQNA["1:1 문의 MYP-080"]`;
+
+  var _iaCurrentTab = 'ia';
+  var _iaCurrentView = 'diagram';
+  var _iaCache = {};
+
+  function openIaFlow(){
+    document.getElementById('iaflowModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    _iaCurrentTab = 'ia';
+    _iaCurrentView = 'diagram';
+    _iaSyncUI();
+    _iaRender();
+  }
+  function closeIaFlow(){
+    document.getElementById('iaflowModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function iaTab(which){
+    _iaCurrentTab = which;
+    _iaSyncUI();
+    _iaRender();
+  }
+  function iaView(mode){
+    _iaCurrentView = mode;
+    _iaSyncUI();
+    _iaRender();
+  }
+  function _iaSyncUI(){
+    document.getElementById('t-ia').classList.toggle('on', _iaCurrentTab === 'ia');
+    document.getElementById('t-flow').classList.toggle('on', _iaCurrentTab === 'flow');
+    document.getElementById('v-diagram').classList.toggle('on', _iaCurrentView === 'diagram');
+    document.getElementById('v-code').classList.toggle('on', _iaCurrentView === 'code');
+    var copyBtn = document.getElementById('iaCopyBtn');
+    if(copyBtn) copyBtn.style.display = _iaCurrentView === 'code' ? '' : 'none';
+  }
+  function _iaRender(){
+    var src = _iaCurrentTab === 'ia' ? IA_SRC : FLOW_SRC;
+    var diagramEl = document.getElementById('iaDiagram');
+    var codeEl    = document.getElementById('iaCode');
+    var codeTextEl= document.getElementById('iaCodeText');
+    if(_iaCurrentView === 'code'){
+      diagramEl.style.display = 'none';
+      codeEl.style.display = '';
+      codeTextEl.textContent = src;
+      return;
+    }
+    codeEl.style.display = 'none';
+    diagramEl.style.display = '';
+    var cacheKey = _iaCurrentTab;
+    if(_iaCache[cacheKey]){ diagramEl.innerHTML = _iaCache[cacheKey]; return; }
+    if(!window.__mermaidReady || !window.mermaid){
+      diagramEl.innerHTML = '<div style="padding:40px;color:#999;font-size:14px;text-align:center">⏳ Mermaid 로딩 중…</div>';
+      var tid = setInterval(function(){
+        if(window.__mermaidReady && window.mermaid){ clearInterval(tid); _iaRender(); }
+      }, 150);
+      return;
+    }
+    var uniqueId = 'mmg_' + cacheKey + '_' + Date.now();
+    window.mermaid.render(uniqueId, src).then(function(res){
+      _iaCache[cacheKey] = res.svg;
+      diagramEl.innerHTML = res.svg;
+    }).catch(function(e){
+      diagramEl.innerHTML = '<div style="padding:40px;color:#c00;font-size:13px">렌더 실패: ' + e.message + '</div>';
+    });
+  }
+  function iaCopy(){
+    var src = _iaCurrentTab === 'ia' ? IA_SRC : FLOW_SRC;
+    var btn = document.getElementById('iaCopyBtn');
+    function _feedback(){ if(btn){ var o=btn.textContent; btn.textContent='✓ 복사됨'; setTimeout(function(){ btn.textContent=o; },1500); } }
+    if(navigator.clipboard){ navigator.clipboard.writeText(src).then(_feedback); }
+    else {
+      var ta=document.createElement('textarea'); ta.value=src;
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); _feedback();
+    }
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){
+      var m=document.getElementById('iaflowModal');
+      if(m && m.classList.contains('open')) closeIaFlow();
+    }
+  });
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad:false, theme:'default', securityLevel:'loose', flowchart:{ useMaxWidth:false } });
+  window.mermaid = mermaid;
+  window.__mermaidReady = true;
 </script>
 </body>
 </html>
