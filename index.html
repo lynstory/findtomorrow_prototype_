@@ -1624,6 +1624,7 @@
   RESULT --> SAVELIST
   SAVELIST -->|"결과 다시보기"| RESULT
   SAVELIST -->|"새 상담 시작"| CHAT
+  RESULT -->|"항목 선택"| JOBD & EDUD & POLD
   HM -->|"내정보"| MYM["내정보 회원 MYP-010"]
   HG -->|"내정보"| MYG["내정보 비회원 MYP-010"]
   MYG -->|"로그인"| LOGIN
@@ -1632,6 +1633,7 @@
   MYM --> SCRAP["스크랩 MYP-040"]
   MYM --> RECL["추천리스트 목록 MYP-070"]
   RECL --> RECD["추천리스트 상세 MYP-071"]
+  RECD -->|"항목 선택"| JOBD & EDUD & POLD
   MYM --> NOTICE["공지사항 MYP-050"]
   MYG --> NOTICE
   NOTICE --> NOTICED["공지 상세 MYP-051"]
