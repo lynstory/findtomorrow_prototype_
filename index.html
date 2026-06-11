@@ -480,26 +480,30 @@
   }
 
   /* ===== IA & Flow 뷰어 ===== */
-  .iaflow-toggle{
+  .bottom-controls{
     position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
-    z-index:200; background:var(--accent); color:#fff;
+    z-index:200; display:flex; gap:10px; flex-wrap:wrap;
+    justify-content:center; align-items:flex-end;
+    max-width:calc(100vw - 24px);
+  }
+  @media(max-width:640px){ body.fit-mode .bottom-controls{ display:none; } }
+  .iaflow-toggle{
+    background:var(--accent); color:#fff;
     padding:10px 22px; border-radius:999px; font-size:13px; font-weight:700;
     box-shadow:0 4px 16px rgba(0,0,0,.3); border:none; cursor:pointer;
     white-space:nowrap;
   }
-  @media(max-width:640px){ body.fit-mode .iaflow-toggle{ display:none; } }
 
   /* ===== 담당자 패널 ===== */
+  .owner-wrap{ position:relative; }
   .owner-toggle{
-    position:fixed; bottom:16px; right:16px;
-    z-index:200; background:#2a2a2a; color:#fff;
+    background:#2a2a2a; color:#fff;
     padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700;
     box-shadow:0 4px 16px rgba(0,0,0,.3); border:none; cursor:pointer;
     white-space:nowrap;
   }
-  @media(max-width:640px){ body.fit-mode .owner-toggle{ display:none; } }
   .owner-panel{
-    position:fixed; bottom:62px; right:16px; z-index:200;
+    position:absolute; bottom:calc(100% + 10px); right:0; z-index:200;
     background:#fff; border:1px solid #e0e0e0; border-radius:12px;
     box-shadow:0 6px 24px rgba(0,0,0,.15);
     width:300px; max-width:calc(100vw - 32px);
@@ -577,26 +581,30 @@
 <button id="dashToggle" class="dash-toggle" onclick="toggleDash()">☰ 화면목록</button>
 <button id="demoToggle" class="demo-toggle" onclick="toggleDemo()">⚙ 데모상태</button>
 <button id="fitToggle" class="fit-toggle" onclick="toggleFit()">⛶ 전체보기</button>
-<button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow &amp; Site Map</button>
-<button id="ownerToggle" class="owner-toggle" onclick="toggleOwner()">👤 담당자</button>
-<div class="owner-panel" id="ownerPanel">
-  <div class="owner-panel-title">화면별 담당자</div>
-  <div class="owner-panel-sub">문의는 해당 영역 담당자에게 바로 연락하세요.</div>
-  <div class="owner-item">
-    <div class="owner-area"><b>온보딩 · 홈</b><small>ONB · HOM</small></div>
-    <span class="owner-link off">미정</span>
-  </div>
-  <div class="owner-item">
-    <div class="owner-area"><b>탐색</b><small>JOB · EDU · POL · 전화문의</small></div>
-    <span class="owner-link off">미정</span>
-  </div>
-  <div class="owner-item">
-    <div class="owner-area"><b>맞춤추천</b><small>REC</small></div>
-    <a class="owner-link" href="https://ig.me/m/lynstory_0" target="_blank" rel="noopener">📩 인스타 DM</a>
-  </div>
-  <div class="owner-item">
-    <div class="owner-area"><b>로그인 · 내정보</b><small>AUTH · MYP</small></div>
-    <span class="owner-link off">미정</span>
+<div class="bottom-controls">
+  <button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow &amp; Site Map</button>
+  <div class="owner-wrap">
+    <button id="ownerToggle" class="owner-toggle" onclick="toggleOwner()">👤 담당자</button>
+    <div class="owner-panel" id="ownerPanel">
+      <div class="owner-panel-title">화면별 담당자</div>
+      <div class="owner-panel-sub">문의는 해당 영역 담당자에게 바로 연락하세요.</div>
+      <div class="owner-item">
+        <div class="owner-area"><b>온보딩 · 홈</b><small>ONB · HOM</small></div>
+        <span class="owner-link off">미정</span>
+      </div>
+      <div class="owner-item">
+        <div class="owner-area"><b>탐색</b><small>JOB · EDU · POL · 전화문의</small></div>
+        <span class="owner-link off">미정</span>
+      </div>
+      <div class="owner-item">
+        <div class="owner-area"><b>맞춤추천</b><small>REC</small></div>
+        <a class="owner-link" href="https://ig.me/m/lynstory_0" target="_blank" rel="noopener">📩 인스타 DM</a>
+      </div>
+      <div class="owner-item">
+        <div class="owner-area"><b>로그인 · 내정보</b><small>AUTH · MYP</small></div>
+        <span class="owner-link off">미정</span>
+      </div>
+    </div>
   </div>
 </div>
 
