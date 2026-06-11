@@ -1550,24 +1550,50 @@
   MYINFO --> MON["의견 보내기"]`;
 
   var SITEMAP_SRC = `graph TD
-  ROOT["내일찾기 홈"]:::root
-  ROOT --> SEARCH["검색"]:::all
+  ROOT["내일찾기"]:::root
+  ROOT --> ONB["온보딩"]:::guest
+  ONB --> S1["스플래시 ONB-010"]:::guestLight
+  ONB --> S2["온보딩 ONB-020"]:::guestLight
+  ROOT --> HOME["홈"]:::all
+  HOME --> H1["홈 (회원) HOM-010"]:::memberLight
+  HOME --> H2["홈 (비회원) HOM-010"]:::guestLight
+  ROOT --> AUTH["로그인 · 계정"]:::guest
+  AUTH --> A1["로그인 AUTH-010"]:::guestLight
+  AUTH --> A2["이메일 로그인 AUTH-020"]:::guestLight
+  AUTH --> A3["비밀번호 찾기 AUTH-030"]:::guestLight
+  AUTH --> A4["재설정 완료 AUTH-040"]:::guestLight
+  AUTH --> A5["회원가입 AUTH-050"]:::guestLight
+  AUTH --> A6["약관 동의 AUTH-060"]:::guestLight
+  AUTH --> A7["가입 완료 AUTH-090"]:::guestLight
+  ROOT --> SEARCH["탐색"]:::all
+  SEARCH --> J1["일자리 리스트 JOB-010"]:::allLight
+  J1 --> J2["일자리 상세 JOB-020"]:::allLight
+  SEARCH --> E1["교육 리스트 EDU-010"]:::allLight
+  E1 --> E2["교육 상세 EDU-020"]:::allLight
+  SEARCH --> P1["정책 리스트 POL-010"]:::allLight
+  P1 --> P2["정책 상세 POL-020"]:::allLight
+  SEARCH --> DIAL["전화 문의"]:::allLight
   ROOT --> REC["맞춤 추천"]:::member
-  ROOT --> SCRAP["스크랩"]:::member
+  REC --> R0["시작 안내 REC-012"]:::guestLight
+  REC --> R1["채팅 REC-010"]:::memberLight
+  R1 --> R2["로딩 REC-020"]:::memberLight
+  R2 --> R3["결과 REC-030"]:::memberLight
+  REC --> R4["저장 리스트 REC-011"]:::memberLight
   ROOT --> MY["내 정보"]:::all
-  ROOT --> ACC["계정"]:::guest
-  SEARCH --> JOB["일자리"]:::allLight & EDU["교육"]:::allLight & POL["정책"]:::allLight
-  REC --> RECGET["추천 받기"]:::memberLight & RECRES["추천 결과"]:::memberLight
-  SCRAP --> SAVED["저장 목록"]:::memberLight
-  MY --> ME["개인정보 수정"]:::memberLight
-  MY --> MS["내가 저장한 목록"]:::memberLight
-  MY --> MRC["추천 기록"]:::memberLight
-  MY --> MNH["알림 내역"]:::memberLight
-  MY --> MNS["알림 설정"]:::allLight
-  MY --> MFQ["FAQ"]:::allLight
-  MY --> MNC["공지사항"]:::allLight
-  MY --> MON2["의견 보내기"]:::allLight
-  ACC --> LOGIN2["로그인"]:::guestLight & SIGNUP2["회원가입"]:::guestLight
+  MY --> M0a["내정보 (회원) MYP-010"]:::memberLight
+  MY --> M0b["내정보 (비회원) MYP-010"]:::guestLight
+  MY --> M1["정보 수정 MYP-020"]:::memberLight
+  MY --> M2["알림 설정 MYP-030"]:::memberLight
+  MY --> M3["스크랩 MYP-040"]:::memberLight
+  MY --> M4["추천 리스트 목록 MYP-070"]:::memberLight
+  M4 --> M5["추천 리스트 상세 MYP-071"]:::memberLight
+  MY --> M6["공지사항 MYP-050"]:::allLight
+  M6 --> M7["공지 상세 MYP-051"]:::allLight
+  MY --> M8["FAQ MYP-060"]:::allLight
+  M8 --> M9["FAQ 상세 MYP-061"]:::allLight
+  MY --> M10["1:1 문의 MYP-080"]:::allLight
+  M10 --> M11["문의 내역 MYP-081"]:::allLight
+  M11 --> M12["문의 상세 MYP-082"]:::allLight
   subgraph LEGEND["접근 권한"]
     direction TB
     LG1["전체 접근"]:::all
