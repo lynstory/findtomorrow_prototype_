@@ -489,6 +489,41 @@
   }
   @media(max-width:640px){ body.fit-mode .iaflow-toggle{ display:none; } }
 
+  /* ===== 담당자 패널 ===== */
+  .owner-toggle{
+    position:fixed; bottom:16px; right:16px;
+    z-index:200; background:#2a2a2a; color:#fff;
+    padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700;
+    box-shadow:0 4px 16px rgba(0,0,0,.3); border:none; cursor:pointer;
+    white-space:nowrap;
+  }
+  @media(max-width:640px){ body.fit-mode .owner-toggle{ display:none; } }
+  .owner-panel{
+    position:fixed; bottom:62px; right:16px; z-index:200;
+    background:#fff; border:1px solid #e0e0e0; border-radius:12px;
+    box-shadow:0 6px 24px rgba(0,0,0,.15);
+    width:300px; max-width:calc(100vw - 32px);
+    padding:16px; display:none; flex-direction:column; gap:10px;
+  }
+  .owner-panel.open{ display:flex; }
+  .owner-panel-title{ font-size:14px; font-weight:700; color:#111; margin-bottom:0; }
+  .owner-panel-sub{ font-size:11px; color:#888; margin-top:-4px; line-height:1.4; }
+  .owner-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 10px; border-radius:8px; background:#f9f9f9; border:1px solid #eee;
+  }
+  .owner-area{ display:flex; flex-direction:column; gap:2px; }
+  .owner-area b{ font-size:13px; font-weight:700; color:#222; }
+  .owner-area small{ font-size:10px; color:#999; font-family:ui-monospace,"SF Mono",monospace; letter-spacing:.03em; }
+  .owner-link{
+    padding:5px 12px; border-radius:6px; font-size:12px; font-weight:700;
+    background:var(--accent); color:#fff; border:none; cursor:pointer;
+    text-decoration:none; white-space:nowrap; flex-shrink:0;
+  }
+  .owner-link.off{
+    background:#f0f0f0; color:#aaa; cursor:default; pointer-events:none;
+  }
+
   .iaflow-modal{
     position:fixed; inset:0; z-index:300;
     background:#fff; display:none; flex-direction:column;
@@ -543,6 +578,27 @@
 <button id="demoToggle" class="demo-toggle" onclick="toggleDemo()">⚙ 데모상태</button>
 <button id="fitToggle" class="fit-toggle" onclick="toggleFit()">⛶ 전체보기</button>
 <button id="iaflowToggle" class="iaflow-toggle" onclick="openIaFlow()">📐 IA &amp; Flow &amp; Site Map</button>
+<button id="ownerToggle" class="owner-toggle" onclick="toggleOwner()">👤 담당자</button>
+<div class="owner-panel" id="ownerPanel">
+  <div class="owner-panel-title">화면별 담당자</div>
+  <div class="owner-panel-sub">문의는 해당 영역 담당자에게 바로 연락하세요.</div>
+  <div class="owner-item">
+    <div class="owner-area"><b>온보딩 · 홈</b><small>ONB · HOM</small></div>
+    <span class="owner-link off">미정</span>
+  </div>
+  <div class="owner-item">
+    <div class="owner-area"><b>탐색</b><small>JOB · EDU · POL · 전화문의</small></div>
+    <span class="owner-link off">미정</span>
+  </div>
+  <div class="owner-item">
+    <div class="owner-area"><b>맞춤추천</b><small>REC</small></div>
+    <a class="owner-link" href="https://ig.me/m/lynstory_0" target="_blank" rel="noopener">📩 인스타 DM</a>
+  </div>
+  <div class="owner-item">
+    <div class="owner-area"><b>로그인 · 내정보</b><small>AUTH · MYP</small></div>
+    <span class="owner-link off">미정</span>
+  </div>
+</div>
 
 <!-- IA & Flow 뷰어 오버레이 -->
 <div class="iaflow-modal" id="iaflowModal">
@@ -1808,7 +1864,21 @@
     if(e.key==='Escape'){
       var m=document.getElementById('iaflowModal');
       if(m && m.classList.contains('open')) closeIaFlow();
+      var p=document.getElementById('ownerPanel');
+      if(p && p.classList.contains('open')) p.classList.remove('open');
     }
+  });
+
+  function toggleOwner(){
+    var p=document.getElementById('ownerPanel');
+    if(p) p.classList.toggle('open');
+  }
+  document.addEventListener('click', function(e){
+    var p=document.getElementById('ownerPanel');
+    var t=document.getElementById('ownerToggle');
+    if(!p || !p.classList.contains('open')) return;
+    if(p.contains(e.target) || (t && t.contains(e.target))) return;
+    p.classList.remove('open');
   });
 </script>
 <script type="module">
