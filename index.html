@@ -1618,11 +1618,12 @@
   HG -->|"맞춤추천"| RC012["추천 안내 REC-012"]
   HM -->|"맞춤추천 최초"| CHAT["채팅 REC-010"]
   HM -->|"맞춤추천 재진입"| SAVELIST["저장 리스트 REC-011"]
-  RC012 --> CHAT
+  RC012 -->|"로그인 필요"| LOGIN
   CHAT --> LOAD["로딩 REC-020"]
   LOAD --> RESULT["추천 결과 REC-030"]
   RESULT --> SAVELIST
   SAVELIST -->|"결과 다시보기"| RESULT
+  SAVELIST -->|"새 상담 시작"| CHAT
   HM -->|"내정보"| MYM["내정보 회원 MYP-010"]
   HG -->|"내정보"| MYG["내정보 비회원 MYP-010"]
   MYG -->|"로그인"| LOGIN
