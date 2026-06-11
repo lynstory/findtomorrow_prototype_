@@ -1603,12 +1603,7 @@
   SIGNUP --> TERMS
   TERMS -->|"동의 완료"| DONE["가입 완료 AUTH-090"]
   DONE --> HM
-  HG --> JOBS["일자리 목록 JOB-010"]
-  HG --> EDUS["교육 목록 EDU-010"]
-  HG --> POLS["정책 목록 POL-010"]
-  HM --> JOBS
-  HM --> EDUS
-  HM --> POLS
+  HG & HM --> JOBS["일자리 목록 JOB-010"] & EDUS["교육 목록 EDU-010"] & POLS["정책 목록 POL-010"]
   JOBS --> JOBD["일자리 상세 JOB-020"]
   EDUS --> EDUD["교육 상세 EDU-020"]
   POLS --> POLD["정책 상세 POL-020"]
